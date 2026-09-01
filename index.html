@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A sleek, modern, and interactive To-Do List web application with checklist animations, progress tracking, and smart organization.">
+  <title>TaskPulse — Modern Interactive Checklist & To-Do App</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Remix Icons via CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+  <!-- Ambient background glow elements -->
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+  <div class="glow-orb orb-3"></div>
+
+  <!-- Canvas for celebration confetti -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="app-wrapper">
+    <header class="app-header">
+      <div class="header-top">
+        <div class="brand-area">
+          <div class="logo-badge">
+            <i class="ri-checkbox-circle-fill"></i>
+          </div>
+          <div>
+            <h1 class="app-title">Task<span>Pulse</span></h1>
+            <p class="greeting" id="greeting-text">Welcome back! Make today count.</p>
+          </div>
+        </div>
+        
+        <div class="header-actions">
+          <button id="sound-toggle-btn" class="icon-btn" title="Toggle audio chime" aria-label="Toggle sound">
+            <i class="ri-volume-up-line" id="sound-icon"></i>
+          </button>
+          <button id="theme-toggle-btn" class="icon-btn" title="Toggle theme" aria-label="Toggle dark/light theme">
+            <i class="ri-sun-line" id="theme-icon"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats & Progress Card -->
+      <div class="progress-card">
+        <div class="progress-info">
+          <div class="date-badge">
+            <i class="ri-calendar-line"></i>
+            <span id="current-date">Wednesday, Sep 2</span>
+          </div>
+          <div class="progress-headline">
+            <h2 id="progress-status-title">Daily Progress</h2>
+            <p id="progress-subtext">0 of 0 tasks completed</p>
+          </div>
+          <div class="mini-metrics">
+            <div class="metric-item">
+              <span class="metric-value" id="metric-total">0</span>
+              <span class="metric-label">Total</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-value" id="metric-pending">0</span>
+              <span class="metric-label">Pending</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-value text-success" id="metric-completed">0</span>
+              <span class="metric-label">Done</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="progress-ring-container">
+          <svg class="progress-ring" width="100" height="100" viewBox="0 0 100 100">
+            <circle class="progress-ring__background" cx="50" cy="50" r="40" stroke-width="8"></circle>
+            <circle class="progress-ring__circle" id="progress-circle" cx="50" cy="50" r="40" stroke-width="8"></circle>
+          </svg>
+          <div class="progress-ring-label">
+            <span id="progress-percentage">0%</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <!-- Add Task Card -->
+      <section class="add-task-card">
+        <form id="task-form" autocomplete="off">
+          <div class="input-row">
+            <div class="input-group">
+              <i class="ri-add-line input-icon"></i>
+              <input 
+                type="text" 
+                id="task-input" 
+                placeholder="What do you need to get done?" 
+                maxlength="150"
+                required
+                aria-label="New task title"
+              />
+            </div>
+            <button type="submit" id="add-task-btn" class="primary-btn" aria-label="Add task">
+              <span>Add Task</span>
+              <i class="ri-arrow-right-line"></i>
+            </button>
+          </div>
+
+          <!-- Quick tag controls (Category & Priority) -->
+          <div class="task-options-bar">
+            <div class="options-group">
+              <!-- Priority Selector -->
+              <div class="priority-selector">
+                <span class="option-label">Priority:</span>
+                <div class="priority-pills">
+                  <label class="priority-pill low">
+                    <input type="radio" name="priority" value="low" checked>
+                    <span><i class="ri-flag-2-line"></i> Low</span>
+                  </label>
+                  <label class="priority-pill medium">
+                    <input type="radio" name="priority" value="medium">
+                    <span><i class="ri-flag-fill"></i> Med</span>
+                  </label>
+                  <label class="priority-pill high">
+                    <input type="radio" name="priority" value="high">
+                    <span><i class="ri-alarm-warning-fill"></i> High</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Category Dropdown -->
+              <div class="category-selector">
+                <span class="option-label">Category:</span>
+                <select id="task-category-select" aria-label="Select category">
+                  <option value="General">🏷️ General</option>
+                  <option value="Work">💼 Work</option>
+                  <option value="Personal">🌟 Personal</option>
+                  <option value="Study">📚 Study</option>
+                  <option value="Health">🏃 Health</option>
+                  <option value="Shopping">🛒 Shopping</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Search & Filters Toolbar -->
+      <section class="toolbar-section">
+        <div class="search-box">
+          <i class="ri-search-line search-icon"></i>
+          <input type="text" id="search-input" placeholder="Search tasks..." aria-label="Search tasks">
+          <button id="clear-search-btn" class="clear-search-btn hidden" aria-label="Clear search">
+            <i class="ri-close-line"></i>
+          </button>
+        </div>
+
+        <div class="filter-actions">
+          <div class="filter-tabs" role="tablist">
+            <button class="tab-btn active" data-filter="all" role="tab" aria-selected="true">
+              All <span class="tab-badge" id="tab-all-count">0</span>
+            </button>
+            <button class="tab-btn" data-filter="active" role="tab" aria-selected="false">
+              Pending <span class="tab-badge" id="tab-active-count">0</span>
+            </button>
+            <button class="tab-btn" data-filter="completed" role="tab" aria-selected="false">
+              Completed <span class="tab-badge" id="tab-completed-count">0</span>
+            </button>
+          </div>
+
+          <div class="dropdown-filter">
+            <select id="category-filter-select" aria-label="Filter by category">
+              <option value="all">All Categories</option>
+              <option value="General">General</option>
+              <option value="Work">Work</option>
+              <option value="Personal">Personal</option>
+              <option value="Study">Study</option>
+              <option value="Health">Health</option>
+              <option value="Shopping">Shopping</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Task Checklist Container -->
+      <section class="tasks-section" aria-label="Task Checklist">
+        <div class="tasks-header">
+          <span class="section-label" id="section-status-label">Your Checklist</span>
+          <div class="bulk-actions">
+            <button id="clear-completed-btn" class="text-btn danger-text hidden">
+              <i class="ri-delete-bin-line"></i> Clear Completed
+            </button>
+          </div>
+        </div>
+
+        <ul class="task-list" id="task-list" aria-live="polite">
+          <!-- Dynamically populated task items -->
+        </ul>
+
+        <!-- Empty State UI -->
+        <div class="empty-state hidden" id="empty-state">
+          <div class="empty-illustration">
+            <i class="ri-task-line"></i>
+          </div>
+          <h3 id="empty-title">No tasks found</h3>
+          <p id="empty-desc">Create a new task above to start crossing things off your list!</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>💡 Click any checkbox to tick and complete tasks with celebration!</p>
+    </footer>
+  </div>
+
+  <!-- Edit Task Modal -->
+  <div class="modal-overlay hidden" id="edit-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Edit Task</h3>
+        <button id="close-modal-btn" class="icon-btn" aria-label="Close modal">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+      <form id="edit-form">
+        <input type="hidden" id="edit-task-id">
+        <div class="form-group">
+          <label for="edit-task-text">Task Name</label>
+          <input type="text" id="edit-task-text" required maxlength="150">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-priority-select">Priority</label>
+            <select id="edit-priority-select">
+              <option value="low">Low Priority</option>
+              <option value="medium">Medium Priority</option>
+              <option value="high">High Priority</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-category-select">Category</label>
+            <select id="edit-category-select">
+              <option value="General">🏷️ General</option>
+              <option value="Work">💼 Work</option>
+              <option value="Personal">🌟 Personal</option>
+              <option value="Study">📚 Study</option>
+              <option value="Health">🏃 Health</option>
+              <option value="Shopping">🛒 Shopping</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="cancel-edit-btn" class="secondary-btn">Cancel</button>
+          <button type="submit" class="primary-btn">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite">
+    <i class="ri-information-line" id="toast-icon"></i>
+    <span id="toast-message">Task updated</span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
