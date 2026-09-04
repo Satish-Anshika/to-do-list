@@ -11,36 +11,6 @@ const STORAGE_KEY = 'taskpulse_todos_v1';
 const THEME_KEY = 'taskpulse_theme';
 const SOUND_KEY = 'taskpulse_sound';
 
-<<<<<<< HEAD
-=======
-const defaultTasks = [
-  {
-    id: 'task-1',
-    text: 'Welcome to TaskPulse! Try ticking this checkbox',
-    priority: 'high',
-    category: 'General',
-    completed: true,
-    createdAt: Date.now() - 3600000 * 2
-  },
-  {
-    id: 'task-2',
-    text: 'Add your own daily task using the form above',
-    priority: 'medium',
-    category: 'Work',
-    completed: false,
-    createdAt: Date.now() - 3600000
-  },
-  {
-    id: 'task-3',
-    text: 'Explore category filters and dark/light mode toggle',
-    priority: 'low',
-    category: 'Personal',
-    completed: false,
-    createdAt: Date.now()
-  }
-];
-
->>>>>>> c9ff82f801b046fccb91ccce84ba64b504d4e5ef
 let tasks = loadTasks();
 let currentFilter = 'all'; // 'all', 'active', 'completed'
 let currentCategory = 'all';
@@ -50,17 +20,10 @@ let isSoundEnabled = localStorage.getItem(SOUND_KEY) !== 'false';
 function loadTasks() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-<<<<<<< HEAD
     return saved ? JSON.parse(saved) : [];
   } catch (e) {
     console.error('Error loading tasks from localStorage', e);
     return [];
-=======
-    return saved ? JSON.parse(saved) : defaultTasks;
-  } catch (e) {
-    console.error('Error loading tasks from localStorage', e);
-    return defaultTasks;
->>>>>>> c9ff82f801b046fccb91ccce84ba64b504d4e5ef
   }
 }
 
@@ -203,11 +166,7 @@ class ConfettiParticle {
     this.gravity = 0.4;
     this.rotation = Math.random() * 360;
     this.rotationSpeed = (Math.random() - 0.5) * 12;
-<<<<<<< HEAD
     const colors = ['#a855f7', '#c084fc', '#d8b4fe', '#e9d5ff', '#ffffff', '#10b981', '#38bdf8', '#cbd5e1'];
-=======
-    const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#10b981', '#38bdf8', '#f59e0b', '#ffffff'];
->>>>>>> c9ff82f801b046fccb91ccce84ba64b504d4e5ef
     this.color = colors[Math.floor(Math.random() * colors.length)];
     this.opacity = 1;
     this.fadeRate = Math.random() * 0.015 + 0.01;
